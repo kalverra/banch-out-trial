@@ -10,7 +10,7 @@ on:
         - main
     workflow_dispatch:
     schedule:
-        - cron: "0 */2 * * *"
+        - cron: "*/15 * * * *"
 
 jobs:
     test:
@@ -31,5 +31,5 @@ jobs:
               uses: trunk-io/analytics-uploader@main
               with:
                 junit-paths: "**/junit.xml"        
-                org-slug: kalverra
+                org-slug: adam-test
                 token: ${{ secrets.TRUNK_TOKEN }}
