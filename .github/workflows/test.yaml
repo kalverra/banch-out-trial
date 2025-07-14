@@ -1,35 +1,47 @@
 name: Test
 on:
-    push:
-        branches:
-        - main
-        tags: 
-        - 'v*.*.*'
-    pull_request:
-        branches:
-        - main
-    workflow_dispatch:
-    schedule:
-        - cron: "0/20 * * * *"
+  push:
+    branches:
+      - main
+    tags:
+      - "v*.*.*"
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+  schedule:
+    - cron: "0/20 * * * *"
 
 jobs:
-    test:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-            - name: Set up Go
-              uses: actions/setup-go@v5
-              with:
-                go-version: stable
-            - name: Download Dependencies
-              run: go mod download
-            - name: Run Tests
-              run: go tool gotestsum --format testname --junitfile=junit.xml -- -v ./... -timeout 5s
-            - name: Upload Test Results to Trunk.io
-              if: ${{ !cancelled() }}
-              uses: trunk-io/analytics-uploader@main
-              with:
-                junit-paths: "**/junit.xml"        
-                org-slug: adam-test
-                token: ${{ secrets.TRUNK_TOKEN }}
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Download Dependencies
+        run: go mod download
+
+      - name: Run Tests
+        id: run-tests
+        continue-on-error: true
+        run: go tool gotestsum --format testname --junitfile=junit.xml -- -v ./... -timeout 5s
+
+      - name: Upload Test Results to Github
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-results-${{ github.run_id }}
+          path: junit.xml
+
+      - name: Upload Test Results to Trunk.io
+        uses: trunk-io/analytics-uploader@main
+        with:
+          junit-paths: "**/junit.xml"
+          org-slug: adam-test
+          token: ${{ secrets.TRUNK_TOKEN }}
+          previous-step-outcome: ${{ steps.run-tests.outcome }}
