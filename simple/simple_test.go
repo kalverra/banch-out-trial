@@ -65,3 +65,12 @@ func TestFlakySeventyFivePercent(t *testing.T) {
 
 	t.Log("This test is healthy. It should flake seventy five percent of the time")
 }
+
+func TestFlakyNinetyPercent(t *testing.T) {
+	t.Parallel()
+
+	rand := rand.Intn(100)
+	require.Greater(t, rand, 90, "This test flaked. It should flake ninety percent of the time")
+
+	t.Log("This test is healthy. It should flake ninety percent of the time")
+}
