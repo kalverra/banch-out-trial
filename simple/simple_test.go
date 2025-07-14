@@ -14,11 +14,6 @@ func TestHealthy(t *testing.T) {
 }
 
 func TestBroken(t *testing.T) {
-	if os.Getenv("RUN_QUARANTINED_TESTS") != "true" {
-		t.Skip("Flaky test quarantined. Ticket <Jira ticket>. Done automatically by branch-out (https://github.com/smartcontractkit/branch-out)")
-	} else {
-		t.Logf("'RUN_QUARANTINED_TESTS' set to '%s', running quarantined test", os.Getenv("RUN_QUARANTINED_TESTS"))
-	}
 	t.Parallel()
 
 	require.Fail(t, "This test is intentionally broken")
@@ -31,6 +26,11 @@ func TestSkip(t *testing.T) {
 }
 
 func TestFlakyTenPercent(t *testing.T) {
+	if os.Getenv("RUN_QUARANTINED_TESTS") != "true" {
+		t.Skip("Flaky test quarantined. Ticket <Jira ticket>. Done automatically by branch-out (https://github.com/smartcontractkit/branch-out)")
+	} else {
+		t.Logf("'RUN_QUARANTINED_TESTS' set to '%s', running quarantined test", os.Getenv("RUN_QUARANTINED_TESTS"))
+	}
 	t.Parallel()
 
 	rand := rand.Intn(100)
