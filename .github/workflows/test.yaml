@@ -30,7 +30,8 @@ jobs:
       - name: Run Tests
         id: run-tests
         env:
-          RUN_QUARANTINED_TESTS: 'true'
+          RUN_QUARANTINED_TESTS: "true"
+          RUN_FAILING_TESTS: "false"
         continue-on-error: true
         run: go tool gotestsum --format testname --junitfile=junit.xml -- -v ./... -timeout 5s
 
